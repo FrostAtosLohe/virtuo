@@ -172,6 +172,10 @@ function calculPrix(array, rentals, cars)
       }
     }
     var prixJours = nombreJours*cars[car].pricePerDay;
+    if(rentals[i].options.deductibleReduction == true)
+    {
+      prixJours = prixJours + nombreJours*4;
+    }
     var prixDistance = cars[car].pricePerKm*rentals[i].distance;
     var total = prixJours + prixDistance;
     if (nombreJours >= 10) 
@@ -186,6 +190,7 @@ function calculPrix(array, rentals, cars)
     {
       total = total * 0.9
     }
+
     array.push(total);
   }
 }
@@ -209,16 +214,29 @@ function commission(cost, rentals, i)
 {
   var array = [];
   var nombreJours = differenceDates(rentals[i].pickupDate, rentals[i].returnDate) + 1;
-  array.push(cost*0.5)
+  array.push(cost*0.3*0.5)
   array.push(1*nombreJours)
-  array.push(cost*0.5-1*nombreJours)
+  array.push(cost*0.3*0.5-1*nombreJours)
   return array
+}
+
+function payActors(actors, arrayCost, arrayCommission)
+{
+  for (var i = 0; i < actors.length; i++)
+  {
+    actors[i].payment[0].amount = arrayCost[i]
+    actors[i].payment[1].amount = arrayCost[i]*0.7
+    actors[i].payment[2].amount = arrayCommission[i][0]
+    actors[i].payment[3].amount = arrayCommission[i][1]
+    actors[i].payment[4].amount = arrayCommission[i][2]
+  }
 }
 
 var arrayCost = []
 calculPrix(arrayCost, rentals, cars)
 var arrayCommission = []
 calculCommission(arrayCommission, arrayCost, rentals)
+payActors(actors, arrayCost, arrayCommission)
 
 console.log(arrayCost)
 console.log(arrayCommission)
